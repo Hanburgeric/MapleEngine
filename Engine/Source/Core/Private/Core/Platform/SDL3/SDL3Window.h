@@ -1,0 +1,47 @@
+#pragma once
+
+// STL
+#include <memory>
+#include <string>
+
+// SDL3
+#include "SDL3/SDL.h"
+
+// Core
+#include "Core/GraphicsAPI.h"
+#include "Core/Platform/Window.h"
+
+namespace maple::core {
+namespace platform {
+
+class SDL3Window final : public Window {
+public:
+  SDL3Window() = delete;
+  SDL3Window(const SDL3Window&) = delete;
+  SDL3Window& operator=(const SDL3Window&) = delete;
+  SDL3Window(SDL3Window&&) = delete;
+  SDL3Window& operator=(SDL3Window&&) = delete;
+
+  SDL3Window(const std::string& window_title,
+             int window_width, int window_height,
+             GraphicsAPI graphics_api);
+  ~SDL3Window() override;
+
+  [[nodiscard]] bool ShouldQuit() const override;
+  void PollEvents() override;
+
+private:
+  struct SDLWindowDeleter {
+    void operator()(SDL_Window* window) {
+      if (window) {
+        SDL_DestroyWindow(window);
+      }
+    }
+  };
+
+  std::unique_ptr<SDL_Window, SDLWindowDeleter> window_{ nullptr };
+  bool should_quit_{ false };
+};
+
+} // namespace platform
+} // namespace maple::core

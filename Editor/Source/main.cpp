@@ -1,29 +1,16 @@
-// STL
-#include <iostream>
-
 // Core
-#include "Core/Engine.h"
-
-namespace maple {
-
-class Editor {
-public:
-  Editor() {
-    std::cout << "Initializing editor..." << std::endl;
-  }
-
-  ~Editor() {
-    std::cout << "Shutting down editor..." << std::endl;
-  }
-
-private:
-  Engine engine{};
-};
-
-} // namespace maple
+#include "Core/Application.h"
 
 int main(int argc, char* argv[]) {
-  maple::Editor editor{};
+  maple::core::ApplicationProperties properties{
+    "Maple Editor",
+    1280, 720,
+    maple::core::PlatformBackend::SDL3,
+    maple::core::GraphicsAPI::Vulkan
+  };
+
+  maple::core::Application app{ properties };
+  app.Run();
 
   return 0;
 }
