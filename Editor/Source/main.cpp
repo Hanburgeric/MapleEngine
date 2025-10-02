@@ -1,15 +1,29 @@
 // STL
 #include <iostream>
 
-// Maple
-#include "Engine.h"
+// Core
+#include "Core/Engine.h"
 
-int main(int argc, char* argv[]) {
-  std::cout << "Initializing editor..." << std::endl;
+namespace maple {
 
-  {
-    maple::Engine engine{};
+class Editor {
+public:
+  Editor() {
+    std::cout << "Initializing editor..." << std::endl;
   }
 
-  std::cout << "Shutting down editor..." << std::endl;
+  ~Editor() {
+    std::cout << "Shutting down editor..." << std::endl;
+  }
+
+private:
+  Engine engine{};
+};
+
+} // namespace maple
+
+int main(int argc, char* argv[]) {
+  maple::Editor editor{};
+
+  return 0;
 }

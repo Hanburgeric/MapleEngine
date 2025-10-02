@@ -3,10 +3,10 @@
 # ======================================================================
 add_executable(
     MapleEditor
-        Source/main.cpp
+        main.cpp
 )
 
 target_link_libraries(
     MapleEditor PRIVATE
-        MapleEngine
+        Maple::Engine
 )
