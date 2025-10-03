@@ -2,14 +2,9 @@
 #include "Core/Application.h"
 
 int main(int argc, char* argv[]) {
-  maple::core::ApplicationProperties properties{
-    "Maple Editor",
-    1280, 720,
-    maple::core::PlatformBackend::SDL3,
-    maple::core::GraphicsAPI::Vulkan
-  };
-
-  maple::core::Application app{ properties };
+  maple::core::Application app{ "Maple Editor",
+                                maple::core::PlatformBackend::SDL3,
+                                maple::core::RendererBackend::Vulkan };
   app.Run();
 
   return 0;

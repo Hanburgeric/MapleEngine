@@ -2,7 +2,7 @@
 
 namespace maple::core {
 
-enum class GraphicsAPI {
+enum class RendererBackend {
   Vulkan
 };
 

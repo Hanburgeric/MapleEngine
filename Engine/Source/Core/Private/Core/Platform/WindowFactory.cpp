@@ -4,24 +4,23 @@
 #include <stdexcept>
 
 // Core
+#include "Core/Log.h"
 #include "Core/Platform/SDL3/SDL3Window.h"
 
 namespace maple::core {
 namespace platform {
 
 std::unique_ptr<Window> WindowFactory::Create(const std::string& window_title,
-                                              int window_width,
-                                              int window_height,
                                               PlatformBackend platform_backend,
-                                              GraphicsAPI graphics_api) {
+                                              RendererBackend renderer_backend) {
   switch (platform_backend) {
     case PlatformBackend::SDL3: {
-      return std::make_unique<SDL3Window>(window_title,
-                                          window_width, window_height,
-                                          graphics_api);
+      return std::make_unique<SDL3Window>(window_title, renderer_backend);
     }
     default: {
-      throw std::runtime_error("Unsupported platform backend.");
+      const std::string msg{ "Unsupported platform backend selected." };
+      MAPLE_LOG_CRITICAL("Core", msg);
+      throw std::runtime_error(msg);
     }
   }
 }

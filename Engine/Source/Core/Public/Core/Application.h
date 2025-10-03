@@ -7,18 +7,10 @@
 // Core
 #include "Core/CoreAPI.h"
 #include "Core/PlatformBackend.h"
-#include "Core/GraphicsAPI.h"
+#include "Core/RendererBackend.h"
 #include "Platform/Window.h"
 
 namespace maple::core {
-
-struct ApplicationProperties {
-  std::string window_title{ "Maple Application" };
-  int window_width{ 1280 };
-  int window_height{ 720 };
-  PlatformBackend platform_backend{ PlatformBackend::SDL3 };
-  GraphicsAPI graphics_api{ GraphicsAPI::Vulkan };
-};
 
 class MAPLE_CORE_API Application {
 public:
@@ -28,7 +20,11 @@ public:
   Application(Application&&) = delete;
   Application& operator=(Application&&) = delete;
 
-  explicit Application(const ApplicationProperties& properties);
+  Application(const std::string& window_title,
+              PlatformBackend platform_backend,
+              RendererBackend renderer_backend);
+
+  ~Application();
 
   void Run();
 

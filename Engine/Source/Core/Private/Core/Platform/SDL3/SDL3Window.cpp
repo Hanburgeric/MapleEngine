@@ -3,22 +3,30 @@
 // STL
 #include <stdexcept>
 
+// Core
+#include "Core/Log.h"
+
 namespace maple::core {
 namespace platform {
 
 SDL3Window::SDL3Window(const std::string& window_title,
-                       int window_width, int window_height,
-                       GraphicsAPI graphics_api) {
+                       RendererBackend renderer_backend) {
   // Initialize SDL
+  MAPLE_LOG_DEBUG("Core", "Initializing SDL3...");
   if (!SDL_Init(SDL_INIT_VIDEO)) {
-    throw std::runtime_error(SDL_GetError());
+    const std::string msg{ "Failed to initialize SDL3: {}", SDL_GetError() };
+    MAPLE_LOG_CRITICAL("Core", msg);
+    throw std::runtime_error(msg);
   }
+  MAPLE_LOG_DEBUG("Core", "SDL3 successfully initialized.");
 
-  // Configure window flags according to the graphics API
-  SDL_WindowFlags window_flags{ SDL_WINDOW_RESIZABLE
-                                | SDL_WINDOW_HIGH_PIXEL_DENSITY };
-  switch (graphics_api) {
-    case GraphicsAPI::Vulkan: {
+  // Configure window for use with the chosen renderer backend
+  SDL_WindowFlags window_flags{
+    SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_HIGH_PIXEL_DENSITY
+  };
+  switch (renderer_backend) {
+    case RendererBackend::Vulkan: {
+      MAPLE_LOG_DEBUG("Core", "Configured SDL3 window for use with Vulkan.");
       window_flags |= SDL_WINDOW_VULKAN;
       break;
     }
@@ -26,21 +34,31 @@ SDL3Window::SDL3Window(const std::string& window_title,
   }
 
   // Create window
-  window_.reset(SDL_CreateWindow(window_title.c_str(),
-                                 window_width, window_height,
-                                 window_flags));
+  MAPLE_LOG_DEBUG("Core", "Creating SDL3 window...");
+  window_.reset(SDL_CreateWindow(window_title.c_str(), 0, 0, window_flags));
   if (!window_) {
+    const std::string msg{ "Failed to create SDL3 window: {}", SDL_GetError() };
+    MAPLE_LOG_CRITICAL("Core", msg);
+
+    // Shut down SDL before throwing
+    MAPLE_LOG_DEBUG("Core", "Shutting down SDL3.");
     SDL_Quit();
-    throw std::runtime_error(SDL_GetError());
+
+    throw std::runtime_error(msg);
   }
+  MAPLE_LOG_DEBUG("Core", "SDL3 window successfully created.");
 }
 
 SDL3Window::~SDL3Window() {
-  // Destroy window
+  // Destroy window and shut down SDL
+  MAPLE_LOG_DEBUG("Core", "Destroying SDL3 window...");
   window_.reset();
+  MAPLE_LOG_DEBUG("Core", "SDL3 window successfully destroyed.");
 
   // Shut down SDL
+  MAPLE_LOG_DEBUG("Core", "Shutting down SDL3.");
   SDL_Quit();
+  MAPLE_LOG_DEBUG("Core", "SDL3 successfully shut down.");
 }
 
 bool SDL3Window::ShouldQuit() const {

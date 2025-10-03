@@ -8,8 +8,8 @@
 #include "SDL3/SDL.h"
 
 // Core
-#include "Core/GraphicsAPI.h"
 #include "Core/Platform/Window.h"
+#include "Core/RendererBackend.h"
 
 namespace maple::core {
 namespace platform {
@@ -22,9 +22,7 @@ public:
   SDL3Window(SDL3Window&&) = delete;
   SDL3Window& operator=(SDL3Window&&) = delete;
 
-  SDL3Window(const std::string& window_title,
-             int window_width, int window_height,
-             GraphicsAPI graphics_api);
+  SDL3Window(const std::string& window_title, RendererBackend renderer_backend);
   ~SDL3Window() override;
 
   [[nodiscard]] bool ShouldQuit() const override;
