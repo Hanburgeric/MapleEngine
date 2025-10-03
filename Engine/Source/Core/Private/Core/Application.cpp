@@ -25,7 +25,6 @@ Application::Application(const std::string& window_title,
     MAPLE_LOG_CRITICAL("Core", msg);
     throw std::runtime_error(msg);
   }
-
   MAPLE_LOG_INFO("Core", "Application window successfully created.");
 }
 
