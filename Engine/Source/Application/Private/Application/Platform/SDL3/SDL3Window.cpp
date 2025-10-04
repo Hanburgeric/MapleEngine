@@ -27,17 +27,26 @@ SDL3Window::SDL3Window(const std::string& window_title,
   };
   switch (renderer_backend) {
     case RendererBackend::Vulkan: {
+      window_flags |= SDL_WINDOW_VULKAN;
       MAPLE_LOG_DEBUG(LogApplication,
                       "Configured SDL3 window for use with Vulkan.");
-      window_flags |= SDL_WINDOW_VULKAN;
       break;
     }
+
+    case RendererBackend::D3D12: { break; }
+
+    case RendererBackend::Metal: {
+      window_flags |= SDL_WINDOW_METAL;
+      MAPLE_LOG_DEBUG(LogApplication,
+                      "Configured SDL3 window for use with Metal.");
+    }
+
     default: { break; }
   }
 
   // Create window
   MAPLE_LOG_DEBUG(LogApplication, "Creating SDL3 window...");
-  window_.reset(SDL_CreateWindow(window_title.c_str(), 0, 0, window_flags));
+  window_.reset(SDL_CreateWindow(window_title.c_str(), 320, 200, window_flags));
   if (!window_) {
     const std::string msg{ std::format("Failed to create SDL3 window: {}",
                                        SDL_GetError()) };

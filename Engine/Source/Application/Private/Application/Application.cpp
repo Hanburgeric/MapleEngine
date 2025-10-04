@@ -74,9 +74,7 @@ RendererBackend Application::SelectRendererBackend(
       break;
     }
 
-    default: {
-      break;
-    }
+    default: { break; }
   }
 
   // Otherwise, attempt to fall back to the platform default
