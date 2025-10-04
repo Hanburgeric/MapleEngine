@@ -45,6 +45,8 @@ public:
    */
   ~SDL3Window() override;
 
+  [[nodiscard]] NativeWindowHandle GetNativeHandle() const override;
+
   [[nodiscard]] bool ShouldQuit() const override;
 
   void PollEvents() override;

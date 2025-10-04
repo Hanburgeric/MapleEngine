@@ -64,6 +64,10 @@ SDL3Window::~SDL3Window() {
   MAPLE_LOG_DEBUG(LogApplication, "SDL3 successfully shut down.");
 }
 
+NativeWindowHandle SDL3Window::GetNativeHandle() const {
+  return window_.get();
+}
+
 bool SDL3Window::ShouldQuit() const {
   return should_quit_;
 }

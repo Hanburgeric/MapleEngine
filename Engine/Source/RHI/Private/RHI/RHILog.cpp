@@ -1,0 +1,3 @@
+#include "RHI/RHILog.h"
+
+MAPLE_DEFINE_LOG_CATEGORY(LogRHI);

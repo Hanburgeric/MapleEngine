@@ -3,6 +3,7 @@
 # ======================================================================
 add_subdirectory(Application)
 add_subdirectory(Core)
+add_subdirectory(RHI)
 
 # ======================================================================
 # Engine Interface Library
@@ -13,6 +14,7 @@ target_link_libraries(
     MapleEngine INTERFACE
         Maple::Application
         Maple::Core
+        Maple::RHI
 )
 
 add_library(Maple::Engine ALIAS MapleEngine)
