@@ -59,6 +59,32 @@ public:
   void Run();
 
 private:
+  /**
+   * @brief Select the renderer backend.
+   *
+   * Validates that the requested backend is available on the current platform.
+   * If unavailable, falls back to the platform default.
+   *
+   * @param requested_backend The renderer backend requested by the user
+   * @return The selected renderer backend (requested or fallback)
+   */
+  [[nodiscard]] RendererBackend SelectRendererBackend(
+    RendererBackend requested_backend
+  ) const;
+
+  /**
+   * @brief Get the default renderer backend for the current platform.
+   *
+   * Prefers platform-native backends (e.g., D3D12 on Windows, Metal on macOS)
+   * for optimal performance, falling back to Vulkan as a cross-platform option.
+   *
+   * @return The default renderer backend for this platform
+   * @throws std::runtime_error If no backend is available (although the
+   *                            build system should prevent this)
+   */
+  [[nodiscard]] RendererBackend GetDefaultRendererBackend() const;
+
+  /// Platform-agnostic window instance
   std::unique_ptr<Window> window_{ nullptr };
 };
 

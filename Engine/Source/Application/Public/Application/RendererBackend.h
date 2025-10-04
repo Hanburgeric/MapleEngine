@@ -13,7 +13,9 @@ namespace maple::application {
  *       which renderer backend will be used in conjunction with it.
  */
 enum class RendererBackend {
-  Vulkan
+  Vulkan,
+  D3D12,
+  Metal
 };
 
 } // namespace maple::application
