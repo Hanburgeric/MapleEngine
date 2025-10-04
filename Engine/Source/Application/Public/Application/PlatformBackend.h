@@ -1,6 +1,6 @@
 #pragma once
 
-namespace maple::core {
+namespace maple::application {
 
 /**
  * @brief Platform abstraction layer backends.
@@ -12,4 +12,4 @@ enum class PlatformBackend {
   SDL3
 };
 
-} // namespace maple::core
+} // namespace maple::application

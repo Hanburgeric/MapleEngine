@@ -1,14 +1,13 @@
-#include "Core/Platform/WindowFactory.h"
+#include "Application/Platform/WindowFactory.h"
 
 // STL
 #include <stdexcept>
 
-// Core
-#include "Core/Log.h"
-#include "Core/Platform/SDL3/SDL3Window.h"
+// Application
+#include "Application/ApplicationLog.h"
+#include "Application/Platform/SDL3/SDL3Window.h"
 
-namespace maple::core {
-namespace platform {
+namespace maple::application {
 
 std::unique_ptr<Window> WindowFactory::Create(const std::string& window_title,
                                               PlatformBackend platform_backend,
@@ -19,11 +18,10 @@ std::unique_ptr<Window> WindowFactory::Create(const std::string& window_title,
     }
     default: {
       const std::string msg{ "Unsupported platform backend selected." };
-      MAPLE_LOG_CRITICAL("Core", msg);
+      MAPLE_LOG_CRITICAL(LogApplication, msg);
       throw std::runtime_error(msg);
     }
   }
 }
 
-} // namespace platform
-} // namespace maple::core
+} // namespace maple::application

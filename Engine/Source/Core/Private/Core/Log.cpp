@@ -5,8 +5,11 @@
 
 namespace maple::core {
 
+LogCategory::LogCategory(const std::string& name)
+  : logger{ spdlog::stdout_color_mt(name) } {}
+
 void Log::Initialize() {
-  // Set the log verbosity depending on the build configuration
+  // Configure the global log level based on build configuration.
 #ifdef NDEBUG
   spdlog::set_level(spdlog::level::info);
 #else
@@ -15,18 +18,8 @@ void Log::Initialize() {
 }
 
 void Log::Shutdown() {
+  // Flush all loggers and shut down background threads.
   spdlog::shutdown();
-}
-
-std::shared_ptr<spdlog::logger> Log::GetLogger(const std::string& name) {
-  // Retrieve a logger from the registry if it exists;
-  // otherwise, lazy-initialize it
-  auto logger{ spdlog::get(name) };
-  if (!logger) {
-    logger = spdlog::stdout_color_mt(name);
-  }
-
-  return logger;
 }
 
 } // namespace maple::core

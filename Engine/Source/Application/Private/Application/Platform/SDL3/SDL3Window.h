@@ -7,12 +7,11 @@
 // SDL3
 #include "SDL3/SDL.h"
 
-// Core
-#include "Core/Platform/Window.h"
-#include "Core/RendererBackend.h"
+// Application
+#include "Application/Platform/Window.h"
+#include "Application/RendererBackend.h"
 
-namespace maple::core {
-namespace platform {
+namespace maple::application {
 
 /**
  * @brief SDL3-based window implementation.
@@ -69,5 +68,4 @@ private:
   bool should_quit_{ false };
 };
 
-} // namespace platform
-} // namespace maple::core
+} // namespace maple::application

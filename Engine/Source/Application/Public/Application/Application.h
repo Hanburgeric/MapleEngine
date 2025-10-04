@@ -4,13 +4,13 @@
 #include <memory>
 #include <string>
 
-// Core
-#include "Core/CoreAPI.h"
-#include "Core/PlatformBackend.h"
-#include "Core/RendererBackend.h"
-#include "Platform/Window.h"
+// Application
+#include "Application/ApplicationAPI.h"
+#include "Application/Platform/Window.h"
+#include "Application/PlatformBackend.h"
+#include "Application/RendererBackend.h"
 
-namespace maple::core {
+namespace maple::application {
 
 /**
  * @brief Core application class managing engine initialization and main loop.
@@ -19,7 +19,7 @@ namespace maple::core {
  * core systems (logging, windowing) and providing the main application loop.
  *
  */
-class MAPLE_CORE_API Application {
+class MAPLE_APPLICATION_API Application {
 public:
   Application() = delete;
   Application(const Application&) = delete;
@@ -59,7 +59,7 @@ public:
   void Run();
 
 private:
-  std::unique_ptr<platform::Window> window_{ nullptr };
+  std::unique_ptr<Window> window_{ nullptr };
 };
 
-} // namespace maple::core
+} // namespace maple::application

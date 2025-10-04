@@ -4,13 +4,12 @@
 #include <memory>
 #include <string>
 
-// Core
-#include "Core/Platform/Window.h"
-#include "Core/PlatformBackend.h"
-#include "Core/RendererBackend.h"
+// Application
+#include "Application/Platform/Window.h"
+#include "Application/PlatformBackend.h"
+#include "Application/RendererBackend.h"
 
-namespace maple::core {
-namespace platform {
+namespace maple::application {
 
 /**
  * @brief Factory for creating platform-specific window implementations.
@@ -36,5 +35,4 @@ public:
                                         RendererBackend renderer_backend);
 };
 
-} // namespace platform
-} // namespace maple::core
+} // namespace maple::application

@@ -1,10 +1,9 @@
 #pragma once
 
-// Core
-#include "Core/CoreAPI.h"
+// Application
+#include "Application/ApplicationAPI.h"
 
-namespace maple::core {
-namespace platform {
+namespace maple::application {
 
 /**
  * @brief Abstract interface for platform window implementations.
@@ -14,7 +13,7 @@ namespace platform {
  * @note This is an abstract base class - instantiate concrete
  *       implementations via WindowFactory.
  */
-class MAPLE_CORE_API Window {
+class MAPLE_APPLICATION_API Window {
 public:
   virtual ~Window() = default;
 
@@ -33,5 +32,4 @@ public:
   virtual void PollEvents() = 0;
 };
 
-} // namespace platform
-} // namespace maple::core
+} // namespace maple::application

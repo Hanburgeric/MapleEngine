@@ -1,6 +1,7 @@
 # ======================================================================
 # Module Subdirectories
 # ======================================================================
+add_subdirectory(Application)
 add_subdirectory(Core)
 
 # ======================================================================
@@ -10,6 +11,7 @@ add_library(MapleEngine INTERFACE)
 
 target_link_libraries(
     MapleEngine INTERFACE
+        Maple::Application
         Maple::Core
 )
 

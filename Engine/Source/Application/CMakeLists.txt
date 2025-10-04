@@ -4,36 +4,33 @@
 include(FetchContent)
 
 FetchContent_Declare(
-    spdlog
-    GIT_REPOSITORY  https://github.com/gabime/spdlog.git
-    GIT_TAG         v1.15.3
+    SDL3
+    GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
+    GIT_TAG         release-3.2.22
 )
 
 FetchContent_MakeAvailable(
-    spdlog
+    SDL3
 )
 
 # ======================================================================
 # Core Dynamic Library
 # ======================================================================
 add_library(
-    MapleCore SHARED
-        Private/Core/Log.cpp
+    MapleApplication SHARED
+        Private/Application/ApplicationLog.cpp
+        Private/Application/Application.cpp
+        Private/Application/Platform/WindowFactory.cpp
+        Private/Application/Platform/SDL3/SDL3Window.cpp
 )
 
 target_compile_definitions(
-    MapleCore
-        PUBLIC
-            # Define spdlog macros that allow compile-time log level filtering;
-            # logs below the active level are compiled out for zero overhead.
-            $<$<CONFIG:Debug>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG>
-            $<$<CONFIG:Release>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO>
-        PRIVATE
-            MAPLE_CORE_BUILD
+    MapleApplication PRIVATE
+        MAPLE_APPLICATION_BUILD
 )
 
 target_include_directories(
-    MapleCore
+    MapleApplication
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public
         PRIVATE
@@ -41,8 +38,9 @@ target_include_directories(
 )
 
 target_link_libraries(
-    MapleCore
-        PUBLIC spdlog::spdlog
+    MapleApplication PRIVATE
+        SDL3::SDL3
+        Maple::Core
 )
 
-add_library(Maple::Core ALIAS MapleCore)
+add_library(Maple::Application ALIAS MapleApplication)

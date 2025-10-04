@@ -1,6 +1,6 @@
 #pragma once
 
-namespace maple::core {
+namespace maple::application {
 
 /**
  * @brief Renderer abstraction layer backends.
@@ -16,4 +16,4 @@ enum class RendererBackend {
   Vulkan
 };
 
-} // namespace maple::core
+} // namespace maple::application
