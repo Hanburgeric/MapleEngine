@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(
 )
 
 # ======================================================================
-# Core Dynamic Library
+# Application Dynamic Library
 # ======================================================================
 add_library(
     MapleApplication SHARED

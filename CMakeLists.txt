@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(MapleEngine LANGUAGES CXX)
 
+# Allow legacy dependencies with old CMake requirements (e.g., EASTL)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.20)
+
 # ======================================================================
 # C++ Configuration
 # ======================================================================
