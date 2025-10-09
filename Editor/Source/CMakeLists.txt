@@ -7,6 +7,8 @@ add_executable(
 )
 
 target_link_libraries(
-    MapleEditor PRIVATE
-        Maple::Engine
+    MapleEditor
+        # Private libraries for internal implementation
+        PRIVATE
+            Maple::Engine
 )

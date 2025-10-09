@@ -16,8 +16,8 @@ namespace maple::core {
  * @brief Log category - represents a named logger.
  *
  * Wraps a spdlog logger instance and provides a way to organize log output
- * by category (e.g., LogApplication, LogRenderer). A category may be declared
- * multiple times, but may only be defined in a single .cpp file.
+ * by category (e.g., LogApplication). A category may be declared multiple
+ * times, but may only be defined in a single .cpp file.
  *
  * @note Access this through the MAPLE_DECLARE_LOG_CATEGORY,
  *       MAPLE_DEFINE_LOG_CATEGORY, and MAPLE_LOG_* macros rather than directly.

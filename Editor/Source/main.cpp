@@ -1,11 +1,13 @@
+// Platform
+#include "Platform/GraphicsAPI.h"
+
 // Application
 #include "Application/Application.h"
-#include "Application/GraphicsAPI.h"
 
 int main(int argc, char* argv[]) {
-  maple::application::Application app{
-    "Maple Editor", maple::application::GraphicsAPI::Vulkan
-  };
+  // Create and run the editor application
+  maple::application::Application app{ "Maple Editor",
+                                       maple::platform::GraphicsAPI::Vulkan };
   app.Run();
 
   return 0;
