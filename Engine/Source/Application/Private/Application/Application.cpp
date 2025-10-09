@@ -3,23 +3,24 @@
 // STL
 #include <stdexcept>
 
+// SDL3
+#include "SDL3/SDL_platform.h"
+
 // Application
 #include "Application/ApplicationLog.h"
-#include "Application/Platform/WindowFactory.h"
 
 namespace maple::application {
 
 Application::Application(const std::string& window_title,
-                         PlatformBackend platform_backend,
-                         RendererBackend renderer_backend) {
+                         GraphicsAPI graphics_api)
+  : platform_os_{ DetectPlatformOS() }
+  , graphics_api_{ SelectGraphicsAPI(graphics_api) } {
   // Initialize logging system
   core::Log::Initialize();
 
-  // Create application window with a validated renderer backend
+  // Create application window with the validated graphics API
   MAPLE_LOG_INFO(LogApplication, "Creating application window...");
-  window_ = WindowFactory::Create(window_title,
-                                  platform_backend,
-                                  SelectRendererBackend(renderer_backend));
+  window_ = std::make_unique<Window>(window_title, graphics_api_);
   if (!window_) {
     const std::string msg{ "Failed to create application window." };
     MAPLE_LOG_CRITICAL(LogApplication, msg);
@@ -39,37 +40,79 @@ Application::~Application() {
   core::Log::Shutdown();
 }
 
+PlatformOS Application::GetPlatformOS() const noexcept {
+  return platform_os_;
+}
+
+GraphicsAPI Application::GetGraphicsAPI() const noexcept {
+  return graphics_api_;
+}
+
 void Application::Run() {
   while (!window_->ShouldQuit()) {
     window_->PollEvents();
   }
 }
 
-RendererBackend Application::SelectRendererBackend(
-  RendererBackend requested_backend
-) const {
-  // Allow use of the requested backend if it is supported by the platform
-  switch (requested_backend) {
-    case RendererBackend::Vulkan: {
-    #ifdef MAPLE_VULKAN_AVAILABLE
-      MAPLE_LOG_INFO(LogApplication, "Selected Vulkan renderer backend.");
-      return requested_backend;
-    #endif
-      break;
-    }
+PlatformOS Application::DetectPlatformOS() const {
+  // Query SDL for the current platform and map to the PlatformOS enum
+  const std::string detected_os{ SDL_GetPlatform() };
+  if (detected_os == "Windows") {
+    MAPLE_LOG_INFO(LogApplication, "Detected platform OS: Windows");
+    return PlatformOS::Windows;
+  }
 
-    case RendererBackend::D3D12: {
+  if (detected_os == "macOS") {
+    MAPLE_LOG_INFO(LogApplication, "Detected platform OS: macOS");
+    return PlatformOS::macOS;
+  }
+
+  if (detected_os == "Linux") {
+    MAPLE_LOG_INFO(LogApplication, "Detected platform OS: Linux");
+    return PlatformOS::Linux;
+  }
+
+  if (detected_os == "iOS") {
+    MAPLE_LOG_INFO(LogApplication, "Detected platform OS: iOS");
+    return PlatformOS::iOS;
+  }
+
+  if (detected_os == "Android") {
+    MAPLE_LOG_INFO(LogApplication, "Detected platform OS: Android");
+    return PlatformOS::Android;
+  }
+
+  // Unsupported platform detected
+  const std::string msg{ "Unsupported platform detected; build or run the "
+                         "application on one of the following platforms: "
+                         "Windows, macOS, Linux, iOS, or Android." };
+  MAPLE_LOG_CRITICAL(LogApplication, msg);
+  throw std::runtime_error(msg);
+}
+
+GraphicsAPI Application::SelectGraphicsAPI(GraphicsAPI requested_api) const {
+  // Allow user selection of a graphics API if it is available for use
+  switch (requested_api) {
+    case GraphicsAPI::D3D12: {
     #ifdef MAPLE_D3D12_AVAILABLE
-      MAPLE_LOG_INFO(LogApplication, "Selected D3D12 renderer backend.");
-      return requested_backend;
+      MAPLE_LOG_INFO(LogApplication, "Selected graphics API: D3D12");
+      return requested_api;
     #endif
       break;
     }
 
-    case RendererBackend::Metal: {
+    case GraphicsAPI::Metal: {
     #ifdef MAPLE_METAL_AVAILABLE
-      MAPLE_LOG_INFO(LogApplication, "Selected Metal renderer backend.");
-      return requested_backend;
+      MAPLE_LOG_INFO(LogApplication, "Selected graphics API: Metal");
+      return requested_api;
+    #endif
+      break;
+    }
+
+    case GraphicsAPI::Vulkan: {
+    #ifdef MAPLE_VULKAN_AVAILABLE
+      MAPLE_LOG_INFO(LogApplication, "Selected graphics API: Vulkan");
+      return requested_api;
     #endif
       break;
     }
@@ -77,31 +120,31 @@ RendererBackend Application::SelectRendererBackend(
     default: { break; }
   }
 
-  // Otherwise, attempt to fall back to the platform default
+  // If the requested API is unavailable, fall back to the platform default
   MAPLE_LOG_WARN(LogApplication,
-                 "Requested renderer backend unavailable, "
-                 "falling back to platform default");
-  return GetDefaultRendererBackend();
+                 "Requested graphics API unavailable; "
+                 "falling back to platform default.");
+  return GetPlatformDefaultGraphicsAPI();
 }
 
-RendererBackend Application::GetDefaultRendererBackend() const {
-  // Prefer platform-native backends for best performance and compatibility
+GraphicsAPI Application::GetPlatformDefaultGraphicsAPI() const {
+  // Prefer platform-native graphics APIs for best performance and compatibility
 #ifdef MAPLE_D3D12_AVAILABLE
-  MAPLE_LOG_INFO(LogApplication, "Selected D3D12 renderer backend.");
-  return RendererBackend::D3D12;
+  MAPLE_LOG_INFO(LogApplication, "Selected graphics API: D3D12");
+  return GraphicsAPI::D3D12;
 
 #elif MAPLE_METAL_AVAILABLE
-  MAPLE_LOG_INFO(LogApplication, "Selected Metal renderer backend.");
-  return RendererBackend::Metal;
+  MAPLE_LOG_INFO(LogApplication, "Selected graphics API: Metal");
+  return GraphicsAPI::Metal;
 
   // Fall back to Vulkan as a cross-platform option
 #elif MAPLE_VULKAN_AVAILABLE
-  MAPLE_LOG_INFO(LogApplication, "Selected Vulkan renderer backend.");
-  return RendererBackend::Vulkan;
+  MAPLE_LOG_INFO(LogApplication, "Selected graphics API: Vulkan");
+  return GraphicsAPI::Vulkan;
 
 #else
   // This should never happen as the build system prevents this
-  const std::string msg{ "No rendering backend is available for selection; "
+  const std::string msg{ "No graphics API is available for selection; "
                          "consider installing the Vulkan SDK or building"
                          "the application on either Windows or macOS." };
   MAPLE_LOG_CRITICAL(LogApplication, msg);
