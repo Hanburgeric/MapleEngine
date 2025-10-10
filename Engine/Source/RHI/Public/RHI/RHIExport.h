@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file RHIAPI.h
+ * @file RHIExport.h
  * @brief Dynamic library import/export macros for the RHI module.
  */
 

@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file PlatformAPI.h
+ * @file PlatformExport.h
  * @brief Dynamic library import/export macros for the Platform module.
  */
 

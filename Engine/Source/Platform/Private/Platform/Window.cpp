@@ -178,11 +178,8 @@ GraphicsAPI Window::SelectGraphicsAPI(GraphicsAPI requested_api) const {
     }
 
     case GraphicsAPI::Vulkan: {
-    #ifdef MAPLE_VULKAN_AVAILABLE
       MAPLE_LOG_INFO(LogPlatform, "Selected graphics API: Vulkan");
       return requested_api;
-    #endif
-      break;
     }
 
     default: { break; }
@@ -205,19 +202,9 @@ GraphicsAPI Window::GetPlatformDefaultGraphicsAPI() const {
   MAPLE_LOG_INFO(LogPlatform, "Selected graphics API: Metal");
   return GraphicsAPI::Metal;
 
-  // Fall back to Vulkan as a cross-platform option
-#elif MAPLE_VULKAN_AVAILABLE
+#endif
   MAPLE_LOG_INFO(LogPlatform, "Selected graphics API: Vulkan");
   return GraphicsAPI::Vulkan;
-
-#else
-  // This should never happen as CMake prevents building without a graphics API
-  const std::string msg{ "No graphics API is available for selection; "
-                         "consider installing the Vulkan SDK or building "
-                         "the application on either Windows or macOS." };
-  MAPLE_LOG_CRITICAL(LogPlatform, msg);
-  throw std::runtime_error(msg);
-#endif
 }
 
 } // namespace maple::platform

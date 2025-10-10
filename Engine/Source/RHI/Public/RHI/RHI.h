@@ -1,7 +1,7 @@
 #pragma once
 
 // RHI
-#include "RHI/RHIAPI.h"
+#include "RHI/RHIExport.h"
 
 namespace maple::rhi {
 

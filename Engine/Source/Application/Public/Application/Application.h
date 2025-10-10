@@ -5,7 +5,7 @@
 #include <string>
 
 // Application
-#include "Application/ApplicationAPI.h"
+#include "Application/ApplicationExport.h"
 
 // Platform
 #include "Platform/GraphicsAPI.h"

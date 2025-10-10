@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file CoreAPI.h
+ * @file CoreExport.h
  * @brief Dynamic library import/export macros for the Core module.
  */
 

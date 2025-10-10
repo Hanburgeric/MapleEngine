@@ -5,7 +5,7 @@
 #include <string>
 
 // Platform
-#include "Platform/PlatformAPI.h"
+#include "Platform/PlatformExport.h"
 #include "Platform/PlatformOS.h"
 #include "Platform/GraphicsAPI.h"
 

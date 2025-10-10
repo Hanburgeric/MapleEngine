@@ -8,7 +8,7 @@
 #include "spdlog/spdlog.h"
 
 // Core
-#include "CoreAPI.h"
+#include "Core/CoreExport.h"
 
 namespace maple::core {
 

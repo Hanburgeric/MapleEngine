@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @file ApplicationAPI.h
+ * @file ApplicationExport.h
  * @brief Dynamic library import/export macros for the Application module.
  */
 

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "maple-engine",
+  "dependencies": [
+    "eastl",
+    "glm",
+    "spdlog",
+    {
+      "name": "sdl3",
+      "default-features": false,
+      "features": ["vulkan"],
+      "platform": "!linux"
+    },
+    {
+      "name": "sdl3",
+      "default-features": false,
+      "features": ["vulkan", "wayland"],
+      "platform": "linux"
+    },
+    "vulkan-sdk-components"
+  ],
+  "builtin-baseline": "4334d8b4c8916018600212ab4dd4bbdc343065d1"
+}

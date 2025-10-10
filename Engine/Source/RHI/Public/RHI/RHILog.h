@@ -4,7 +4,7 @@
 #include "Core/Log.h"
 
 // RHI
-#include "RHI/RHIAPI.h"
+#include "RHI/RHIExport.h"
 
 /**
  * @brief Log category for RHI (Render Hardware Interface) module messages.
