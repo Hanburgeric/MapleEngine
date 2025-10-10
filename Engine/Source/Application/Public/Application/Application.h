@@ -4,20 +4,24 @@
 #include <memory>
 #include <string>
 
+// Platform
+#include "Platform/GraphicsAPI.h"
+
 // Application
 #include "Application/ApplicationExport.h"
 
-// Platform
-#include "Platform/GraphicsAPI.h"
-#include "Platform/Window.h"
+// Forward declarations
+namespace maple::platform{ class Window; }
+namespace maple::renderer{ class Renderer; }
 
 namespace maple::application {
 
 /**
- * @brief Core application class managing engine initialization and main loop.
+ * @brief Core application class managing the engine's main loop and subsystems.
  *
- * Serves as the entry point for the Maple Engine, handling initialization of
- * core systems and providing the main application loop.
+ * Serves as the composition root and entry point for the engine. Manages
+ * initialization and shutdown of core subsystems (e.g. logging), provides the
+ * main application loop, and manages  layers for extending engine functionality.
  */
 class MAPLE_APPLICATION_API Application {
 public:
@@ -28,37 +32,37 @@ public:
   Application& operator=(Application&&) = delete;
 
   /**
-   * @brief Construct a new Application.
+   * @brief Construct an application with the specified window and graphics API.
    *
-   * Initializes the logging system and creates the application window with
-   * the specified graphics API.
+   * Initializes all engine subsystems and prepares the application for execution.
    *
    * @param window_title Title displayed in the window title bar
-   * @param graphics_api Graphics API backend (e.g., Vulkan)
+   * @param graphics_api Requested graphics API (may fall back to default)
    *
-   * @throws std::runtime_error If window creation fails
+   * @throws std::runtime_error If critical subsystem initialization fails
    */
   Application(const std::string& window_title,
               platform::GraphicsAPI graphics_api);
 
   /**
-   * @brief Destroy the Application.
-   *
-   * Shuts down the window and logging systems.
+   * @brief Shut down all subsystems and destroy the application.
    */
   ~Application();
 
   /**
    * @brief Run the main application loop.
    *
-   * Enters the main loop, polling for events and processing frame updates
-   * until the application receives a quit signal.
+   * Executes the engine's frame loop, updating and rendering all active
+   * subsystems and layers until termination is requested.
    */
   void Run();
 
 private:
-  /// Platform-agnostic window instance
-  std::unique_ptr<platform::Window> window_;
+  /// Application window
+  std::unique_ptr<platform::Window> window_{ nullptr };
+
+  /// High-level rendering system
+  std::unique_ptr<renderer::Renderer> renderer_{ nullptr };
 };
 
 } // namespace maple::application

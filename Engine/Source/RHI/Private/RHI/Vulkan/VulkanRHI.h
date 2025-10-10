@@ -3,17 +3,21 @@
 // RHI
 #include "RHI/RHI.h"
 
+// Forward declarations
+namespace maple::platform{ class Window; }
+
 namespace maple::rhi {
 
-/**
- * @brief Vulkan implementation of the RHI interface.
- *
- * Provides Vulkan-specific rendering functionality conforming to the
- * engine's hardware abstraction layer. Manages Vulkan resources, command
- * submission, and rendering operations.
- */
 class VulkanRHI final : public RHI {
 public:
+  explicit VulkanRHI(platform::Window* window);
+
+  ~VulkanRHI() override;
+
+  void BeginFrame() override;
+  void Clear(float r, float g, float b, float a) override;
+  void EndFrame() override;
+  void Present() override;
 
 private:
 

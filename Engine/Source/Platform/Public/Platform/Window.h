@@ -15,10 +15,10 @@ struct SDL_Window;
 namespace maple::platform {
 
 /**
- * @brief SDL3-based windowing and platform abstraction.
+ * @brief Cross-platform window management via SDL.
  *
- * Manages window creation, event handling, platform detection, and graphics API
- * selection using SDL3 as the underlying platform layer.
+ * Manages platform detection, graphics API selection with fallback support,
+ * SDL lifecycle, window creation, and event handling.
  */
 class MAPLE_PLATFORM_API Window {
 public:
@@ -29,69 +29,86 @@ public:
   Window& operator=(Window&&) = delete;
 
   /**
-   * @brief Construct a window with the specified graphics API.
+   * @brief Construct a window with the specified title and graphics API.
    *
-   * Initializes SDL3, detects the platform, validates the graphics API,
-   * and creates the window configured for the selected graphics API.
+   * Detects the platform OS, selects an available graphics API (falling back to
+   * the platform default if the requested API is unavailable), initializes SDL,
+   * and creates the window for the selected API.
    *
    * @param window_title Title displayed in the window title bar
-   * @param graphics_api Graphics API backend (affects window creation flags)
+   * @param graphics_api Requested graphics API (may fall back to default)
    *
-   * @throws std::runtime_error If SDL initialization or window creation fails
+   * @throws std::runtime_error If SDL initialization or window creation fails,
+   *                            or if the platform is unsupported
    */
   Window(const std::string& window_title, GraphicsAPI graphics_api);
 
-  /// Destroy the window and shut down SDL3.
+  /**
+   * @brief Destroy the window and shut down SDL.
+   */
   ~Window();
 
   /**
-   * @brief Check if the window should close.
+   * @brief Check if the application should quit.
    *
-   * @return true if a quit event has been received, false otherwise
+   * @return true if a quit has been requested, false otherwise
    */
-  [[nodiscard]] bool ShouldQuit() const;
+  [[nodiscard]] bool ShouldQuit() const noexcept;
 
   /**
-   * @brief Poll and process window events.
+   * @brief Poll and process pending window events.
    *
-   * Processes all pending window events from SDL's event queue.
+   * Processes all queued SDL events. Updates internal state when relevant
+   * events are received (e.g., keyboard input).
    */
   void PollEvents();
 
   /**
-   * @brief Get the native SDL window handle.
+   * @brief Get the platform-specific native window handle.
    *
-   * @return Platform-specific window handle as a void pointer
+   * @return Opaque pointer to the SDL_Window instance
    */
-  [[nodiscard]] void* GetNativeHandle() const;
+  [[nodiscard]] void* GetNativeHandle() const noexcept;
 
-  /// Get the detected platform operating system
+  /**
+   * @brief Get the detected operating system platform.
+   *
+   * @return The platform OS detected during window construction
+   */
   [[nodiscard]] PlatformOS GetPlatformOS() const noexcept;
 
-  /// Get the selected graphics API backend
+  /**
+   * @brief Get the selected graphics API.
+   *
+   * @return The graphics API configured for this window
+   */
   [[nodiscard]] GraphicsAPI GetGraphicsAPI() const noexcept;
 
 private:
-  /// Custom deleter for SDL_Window unique_ptr
+  /**
+   * @brief Custom deleter for SDL_Window unique_ptr.
+   *
+   * Calls SDL_DestroyWindow to properly clean up the SDL window.
+   */
   struct SDLWindowDeleter {
     void operator()(SDL_Window* window);
   };
 
   /**
-   * @brief Detect the current platform operating system.
+   * @brief Detect the operating system at runtime.
    *
-   * Query the runtime platform via SDL and map the result to PlatformOS.
+   * Uses SDL platform detection to identify the current OS.
    *
    * @return The detected platform OS
-   * @throws std::runtime_error If the platform is not recognized or supported
+   * @throws std::runtime_error If the platform is unsupported
    */
   [[nodiscard]] PlatformOS DetectPlatformOS() const;
 
   /**
-   * @brief Select the graphics API backend.
+   * @brief Select a graphics API based on availability.
    *
-   * Validates that the requested backend is available on the current platform.
-   * If unavailable, falls back to the platform default.
+   * Validates the requested API is available on this platform and build
+   * configuration. Falls back to the platform default if unavailable.
    *
    * @param requested_api The graphics API requested by the user
    * @return The selected graphics API (requested or fallback)
@@ -99,28 +116,26 @@ private:
   [[nodiscard]] GraphicsAPI SelectGraphicsAPI(GraphicsAPI requested_api) const;
 
   /**
-   * @brief Get the default graphics API for the current platform.
+   * @brief Get the default graphics API for this platform.
    *
-   * Prefers platform-native backends (e.g., D3D12 on Windows, Metal on macOS)
-   * for optimal performance, falling back to Vulkan as a cross-platform option.
+   * Returns the preferred graphics API based on build configuration and
+   * platform (D3D12 on Windows, Metal on macOS/iOS, Vulkan otherwise).
    *
-   * @return The default graphics API for this platform
-   * @throws std::runtime_error If no backend is available (although the
-   *                            build system should prevent this)
+   * @return The platform's default graphics API
    */
-  [[nodiscard]] GraphicsAPI GetPlatformDefaultGraphicsAPI() const;
+  [[nodiscard]] GraphicsAPI GetDefaultGraphicsAPI() const;
 
-  /// Native SDL_Window handle
+  /// SDL window instance with custom deleter
   std::unique_ptr<SDL_Window, SDLWindowDeleter> window_{ nullptr };
 
-  /// Flag indicating whether a quit event has been received
+  /// Flag indicating whether a quit has been requested
   bool should_quit_{ false };
 
-  /// Current platform operating system
+  /// Detected operating system platform (immutable after construction)
   const PlatformOS platform_os_;
 
-  /// Selected graphics API backend
-  const GraphicsAPI graphics_api_;
+  /// Selected graphics API for this window
+  GraphicsAPI graphics_api_;
 };
 
 } // namespace maple::platform

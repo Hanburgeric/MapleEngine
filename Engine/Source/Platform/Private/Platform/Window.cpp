@@ -14,25 +14,24 @@ namespace maple::platform {
 
 Window::Window(const std::string& window_title, GraphicsAPI graphics_api)
   : platform_os_{ DetectPlatformOS() }
-  , graphics_api_{ SelectGraphicsAPI(graphics_api) }
-{
-  // Initialize SDL3 with core subsystems
-  MAPLE_LOG_DEBUG(LogPlatform, "Initializing SDL3...");
+  , graphics_api_{ SelectGraphicsAPI(graphics_api) } {
+  // Initialize SDL subsystems
+  MAPLE_LOG_INFO(LogPlatform, "Initializing SDL3...");
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK
                 | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD)) {
     const std::string msg{ std::format("Failed to initialize SDL3: {}",
                                        SDL_GetError()) };
     MAPLE_LOG_CRITICAL(LogPlatform, msg);
-    throw std::runtime_error(msg);
+    throw std::runtime_error{ msg };
   }
-  MAPLE_LOG_DEBUG(LogPlatform, "SDL3 successfully initialized.");
+  MAPLE_LOG_INFO(LogPlatform, "SDL3 initialized");
 
-  // Configure base window flags (common to all graphics APIs)
+  // Configure base window flags
   SDL_WindowFlags window_flags{
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_HIGH_PIXEL_DENSITY
   };
 
-  // Add API-specific flags to enable graphics backend support
+  // Add flags specific to graphics APIs
   switch (graphics_api_) {
     case GraphicsAPI::D3D12: {
       break;
@@ -40,56 +39,55 @@ Window::Window(const std::string& window_title, GraphicsAPI graphics_api)
 
     case GraphicsAPI::Metal: {
       window_flags |= SDL_WINDOW_METAL;
-      MAPLE_LOG_DEBUG(LogPlatform,
-                      "Configured SDL3 window for use with Metal.");
+      MAPLE_LOG_INFO(LogPlatform, "Configured SDL window for use with Metal.");
       break;
     }
 
     case GraphicsAPI::Vulkan: {
       window_flags |= SDL_WINDOW_VULKAN;
-      MAPLE_LOG_DEBUG(LogPlatform,
-                      "Configured SDL3 window for use with Vulkan.");
+      MAPLE_LOG_INFO(LogPlatform, "Configured SDL window for use with Vulkan.");
       break;
     }
 
     default: { break; }
   }
 
-  // Create the SDL window with the configured flags
-  MAPLE_LOG_DEBUG(LogPlatform, "Creating SDL3 window...");
+  // Create the SDL window
+  MAPLE_LOG_INFO(LogPlatform, "Creating SDL window...");
   window_.reset(SDL_CreateWindow(window_title.c_str(), 320, 200, window_flags));
   if (!window_) {
-    const std::string msg{ std::format("Failed to create SDL3 window: {}",
+    const std::string msg{ std::format("Failed to create SDL window: {}",
                                        SDL_GetError()) };
     MAPLE_LOG_CRITICAL(LogPlatform, msg);
 
-    // Clean up SDL before throwing to prevent resource leaks
-    MAPLE_LOG_DEBUG(LogPlatform, "Shutting down SDL3.");
+    // Shut down SDL subsystems on failure
+    MAPLE_LOG_INFO(LogPlatform, "Shutting down SDL3...");
     SDL_Quit();
+    MAPLE_LOG_INFO(LogPlatform, "SDL3 shut down");
 
-    throw std::runtime_error(msg);
+    throw std::runtime_error{ msg };
   }
-  MAPLE_LOG_DEBUG(LogPlatform, "SDL3 window successfully created.");
+  MAPLE_LOG_INFO(LogPlatform, "SDL window created");
 }
 
 Window::~Window() {
-  // Destroy the SDL3 window first
-  MAPLE_LOG_DEBUG(LogPlatform, "Destroying SDL3 window...");
+  // Destroy the SDL window
+  MAPLE_LOG_INFO(LogPlatform, "Destroying SDL window...");
   window_.reset();
-  MAPLE_LOG_DEBUG(LogPlatform, "SDL3 window successfully destroyed.");
+  MAPLE_LOG_INFO(LogPlatform, "SDL window destroyed");
 
-  // Shut down SDL3 subsystems
-  MAPLE_LOG_DEBUG(LogPlatform, "Shutting down SDL3.");
+  // Shut down SDL subsystems
+  MAPLE_LOG_INFO(LogPlatform, "Shutting down SDL3...");
   SDL_Quit();
-  MAPLE_LOG_DEBUG(LogPlatform, "SDL3 successfully shut down.");
+  MAPLE_LOG_INFO(LogPlatform, "SDL3 shut down");
 }
 
-bool Window::ShouldQuit() const {
+bool Window::ShouldQuit() const noexcept {
   return should_quit_;
 }
 
 void Window::PollEvents() {
-  // Process all pending events in the queue
+  // Poll and process all queued SDL events
   SDL_Event event{};
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
@@ -102,7 +100,7 @@ void Window::PollEvents() {
   }
 }
 
-void* Window::GetNativeHandle() const {
+void* Window::GetNativeHandle() const noexcept {
   return window_.get();
 }
 
@@ -121,10 +119,10 @@ void Window::SDLWindowDeleter::operator()(SDL_Window* window) {
 }
 
 PlatformOS Window::DetectPlatformOS() const {
-  // Query SDL3 for the current platform string
+  // Get the platform OS as a string
   const std::string detected_os{ SDL_GetPlatform() };
 
-  // Map the string to the engine's PlatformOS enum
+  // Map the string to the PlatformOS enum
   if (detected_os == "Windows") {
     MAPLE_LOG_INFO(LogPlatform, "Detected platform OS: Windows");
     return PlatformOS::Windows;
@@ -150,16 +148,16 @@ PlatformOS Window::DetectPlatformOS() const {
     return PlatformOS::Android;
   }
 
-  // Platform is not recognized or supported
+  // Platform is not supported
   const std::string msg{ "Unsupported platform detected; build or run the "
                          "application on one of the following platforms: "
                          "Windows, macOS, Linux, iOS, or Android." };
   MAPLE_LOG_CRITICAL(LogPlatform, msg);
-  throw std::runtime_error(msg);
+  throw std::runtime_error{ msg };
 }
 
 GraphicsAPI Window::SelectGraphicsAPI(GraphicsAPI requested_api) const {
-  // Check if the requested API is available on this platform
+  // Check if the requested API is available in this build
   switch (requested_api) {
     case GraphicsAPI::D3D12: {
     #ifdef MAPLE_D3D12_AVAILABLE
@@ -185,15 +183,15 @@ GraphicsAPI Window::SelectGraphicsAPI(GraphicsAPI requested_api) const {
     default: { break; }
   }
 
-  // Requested API is unavailable; use the platform default instead
+  // Requested API unavailable, fall back to platform default
   MAPLE_LOG_WARN(LogPlatform,
                  "Requested graphics API unavailable; "
                  "falling back to platform default.");
-  return GetPlatformDefaultGraphicsAPI();
+  return GetDefaultGraphicsAPI();
 }
 
-GraphicsAPI Window::GetPlatformDefaultGraphicsAPI() const {
-  // Prefer platform-native APIs for best performance and compatibility
+GraphicsAPI Window::GetDefaultGraphicsAPI() const {
+  // Select platform default based on build configuration
 #ifdef MAPLE_D3D12_AVAILABLE
   MAPLE_LOG_INFO(LogPlatform, "Selected graphics API: D3D12");
   return GraphicsAPI::D3D12;

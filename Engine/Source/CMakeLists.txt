@@ -4,6 +4,7 @@
 add_subdirectory(Application)
 add_subdirectory(Core)
 add_subdirectory(Platform)
+add_subdirectory(Renderer)
 add_subdirectory(RHI)
 
 # ======================================================================
@@ -16,6 +17,7 @@ target_link_libraries(
         Maple::Application
         Maple::Core
         Maple::Platform
+        Maple::Renderer
         Maple::RHI
 )
 

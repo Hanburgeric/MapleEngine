@@ -9,6 +9,8 @@ find_package(Vulkan)
 add_library(
     MapleRHI SHARED
         Private/RHI/RHILog.cpp
+        Private/RHI/RHI.cpp
+        Private/RHI/Vulkan/VulkanRHI.cpp
 )
 
 target_compile_definitions(
