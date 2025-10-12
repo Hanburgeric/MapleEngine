@@ -1,3 +1,8 @@
+// STL
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+
 // Platform
 #include "Platform/GraphicsAPI.h"
 
@@ -5,10 +10,15 @@
 #include "Application/Application.h"
 
 int main(int argc, char* argv[]) {
-  // Initialize and run Maple Editor
-  maple::application::Application app{ "Maple Editor",
-                                       maple::platform::GraphicsAPI::Vulkan };
-  app.Run();
+  try {
+    // Initialize and run Maple Editor
+    maple::application::Application app{ "Maple Editor",
+                                         maple::platform::GraphicsAPI::Vulkan };
+    app.Run();
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+  }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

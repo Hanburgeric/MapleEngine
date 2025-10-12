@@ -100,7 +100,7 @@ void Window::PollEvents() {
   }
 }
 
-void* Window::GetNativeHandle() const noexcept {
+SDL_Window* Window::GetSDLWindow() const noexcept {
   return window_.get();
 }
 

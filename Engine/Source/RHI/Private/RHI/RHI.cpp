@@ -6,11 +6,11 @@
 
 // Platform
 #include "Platform/GraphicsAPI.h"
+#include "Platform/Window.h"
 
 // RHI
-#include "Platform/Window.h"
 #include "RHI/RHILog.h"
-#include "Vulkan/VulkanRHI.h"
+#include "RHI/Vulkan/VulkanRHI.h"
 
 namespace maple::rhi {
 

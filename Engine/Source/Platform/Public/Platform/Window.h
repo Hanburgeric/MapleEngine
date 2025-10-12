@@ -64,11 +64,11 @@ public:
   void PollEvents();
 
   /**
-   * @brief Get the platform-specific native window handle.
+   * @brief Get the SDL window handle.
    *
-   * @return Opaque pointer to the SDL_Window instance
+   * @return Non-owning pointer to the SDL_Window instance
    */
-  [[nodiscard]] void* GetNativeHandle() const noexcept;
+  [[nodiscard]] SDL_Window* GetSDLWindow() const noexcept;
 
   /**
    * @brief Get the detected operating system platform.

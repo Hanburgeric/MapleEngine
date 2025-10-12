@@ -1,7 +1,8 @@
 # ======================================================================
 # Dependencies
 # ======================================================================
-find_package(Vulkan)
+find_package(SDL3 CONFIG REQUIRED)
+find_package(Vulkan REQUIRED)
 
 # ======================================================================
 # RHI Dynamic Library
@@ -19,6 +20,12 @@ target_compile_definitions(
         PRIVATE
             # For dynamic library import/export macros
             MAPLE_RHI_BUILD
+
+            # Enable designated initializers for Vulkan-Hpp
+            VULKAN_HPP_NO_CONSTRUCTORS
+
+            # Enable dynamic dispatcher for Vulkan extension functions
+            VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
 )
 
 target_include_directories(
@@ -36,12 +43,14 @@ target_link_libraries(
     MapleRHI
         # Private libraries for internal implementation
         PRIVATE
+            SDL3::SDL3
+            Vulkan::Vulkan
             Maple::Core
             Maple::Platform
 )
 
 # ======================================================================
-# Backend Compilation and Linking
+# Platform-Specific RHI Backend Compilation and Linking
 # ======================================================================
 # D3D12 (Windows)
 if (WIN32)
@@ -53,12 +62,6 @@ endif()
 if (APPLE)
     # target_sources(MapleRHI PRIVATE Private/RHI/Metal/MetalRHI.cpp)
     target_link_libraries(MapleRHI PRIVATE "-framework Metal")
-endif()
-
-# Vulkan (All Platforms)
-if (Vulkan_FOUND)
-    target_sources(MapleRHI PRIVATE Private/RHI/Vulkan/VulkanRHI.cpp)
-    target_link_libraries(MapleRHI PRIVATE Vulkan::Vulkan)
 endif()
 
 # Namespaced alias for consistent linking
